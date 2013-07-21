@@ -14,7 +14,7 @@ SIZE = avr-size
 # PARAMETERS #
 ##############
 
-TARGET = $(notdir $(CURDIR))
+TARGET = ${.CURDIR:C/.*\///g}
 PROGRAMMER = avrisp2
 MCU = atmega328
 PART = m328p
