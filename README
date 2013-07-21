@@ -1,0 +1,67 @@
+AVR-TOOLS
+
+This is a collection of utility code I've written for working with AVR
+microcontrollers.
+
+
+EXAMPLE
+An example using the Makefile and serial code is at
+
+	http://github.com/kisom/avr-echo
+
+It should be placed in a directory named "echo", i.e.
+
+	git clone git://github.com/kisom/avr-echo echo
+
+
+MAKEFILE:
+I've written a Makefile for building projects. It expects projects to be
+organised such that the main code resides in a C file with the same name
+as the current directory's basename. For example, if my project is in
+
+	/home/kyle/code/avr/foo
+
+the main code should be in the foo.c file. Any additional source files
+to be build should be placed in the SOURCES = variable in the Makefile.
+
+The Makefile also defaults to a 16 MHz clock speed and an ATmega328:
+if you are using a different clock speed or microcontroller, you'll
+need to change these.
+
+By default, it uses the avr-gcc and avr-libc toolchain[1], with avrdude[2]
+as the programmer. Once the target has been built, it reports the size of
+the built image. For example, with the echo example:
+
+	kyle@rei:~/code/avr/echo$ make
+	avr-gcc -Wall -Os -DF_CPU=16000000 -mmcu=atmega328 -I. -o echo.elf \
+	serial.c echo.c 
+	avr-strip echo.elf
+	avr-objcopy -O ihex -R .eeprom echo.elf echo.hex
+	avr-size echo.hex
+	   text	   data	    bss	    dec	    hex	filename
+	      0	    492	      0	    492	    1ec	echo.hex
+	
+
+SERIAL
+The serial.c and serial.h files currently provide simple serial port setup
+and blocking transmit/receive. For example:
+
+	unsigned char	ok[] = "ok\r\n";
+	unsigned char	in;
+	
+	serial_init(9600, 0);
+	serial_transmit(ok, 4);
+	while (1) {
+		in = serial_block_receive_byte();
+		serial_block_transmit_byte(in);
+	}
+
+	
+LICENSE
+This code is released under the ISC license. The LICENSE file contains the
+full text of the license.
+
+REFERENCES
+
+[1] avr-libc: http://www.nongnu.org/avr-libc/
+[2] avrdude: http://www.nongnu.org/avrdude/
