@@ -22,6 +22,7 @@
 
 void	i2c_init();
 int	i2c_sendbyte(int, unsigned int, unsigned int, char);
+int	i2c_readbyte(int, unsigned int, unsigned int, char *);
 
 
 #endif
